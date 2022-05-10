@@ -23,8 +23,8 @@ pipenv run api
 
 ### Available Endpoints
 ```
-POST /api/{brand_pk}/discount/generate
-GET /api/{brand_pk}/discount/fetch?user_id={user_id}
+POST /api/{brand_id}/discount/generate
+GET /api/{brand_id}/discount/fetch?user_id={user_id}
 ```
 
 ![Diagram](https://github.com/rybach/discount_server/blob/main/images/diagram.drawio.svg)
