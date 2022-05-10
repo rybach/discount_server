@@ -1,6 +1,7 @@
 import uuid
+from fastapi import Request
 
-from fastapi import APIRouter, Body
+from fastapi import Response, APIRouter, Body, status
 from sqlalchemy import and_
 
 from api.db.models import DiscountCodes
@@ -9,23 +10,29 @@ router = APIRouter()
 
 
 @router.post("/{brand_id}/discount/generate")
-async def generate(brand_id: int, count: int = Body(..., embed=True)):
+async def generate(request: Request, response: Response, brand_id: int, count: int = Body(..., embed=True)):
     """
     Endpoint for generation discount codes for specific brand. If number of codes is ot specified, generates 1 code.
 
+    :param response: Response parameter for access response information.
+    :param request: Request parameter for access application configuration.
     :param brand_id: PK of a Brand in Brands Table.
     :param count: A number of codes needed to be generated.
     :return:
     """
 
     codes = []
-    if not count:
-        count = 1
+    app_config = request.app.config
+    if count > app_config.max_codes_per_request:
+        response.status_code = status.HTTP_413_REQUEST_ENTITY_TOO_LARGE
+    else:
+        if not count:
+            count = 1
 
-    for c in range(count):
-        code = str(uuid.uuid4())
-        await DiscountCodes(brand_id=brand_id, code=code).create()
-        codes.append(code)
+        for c in range(count):
+            code = str(uuid.uuid4())
+            await DiscountCodes(brand_id=brand_id, code=code).create()
+            codes.append(code)
 
     return {"discount_codes": codes}
 

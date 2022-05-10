@@ -12,9 +12,10 @@ class Config:
 
         self.postgres = self._POSTGRES(
             dsn=env.str('POSTGRES_DSN'),
-            pool_max_size=env.int('POSTGRES_POOL_MAX_SIZE', 20),
-            pool_min_size=env.int('POSTGRES_POOL_MIN_SIZE', 10),
+            pool_max_size=env.int('POSTGRES_POOL_MAX_SIZE'),
+            pool_min_size=env.int('POSTGRES_POOL_MIN_SIZE'),
         )
+        self.max_codes_per_request = env.int('MAX_CODES_PER_REQUEST')
 
 
 def init_config() -> Config:
